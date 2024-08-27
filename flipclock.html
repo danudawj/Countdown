@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flip Clock Widget</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #ff0000, #0000ff, #00ff00);
+            background-size: 300% 300%;
+            animation: gradientAnimation 10s ease infinite;
+            z-index: -1;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .flip-clock {
+            display: flex;
+            font-family: 'Courier New', Courier, monospace;
+            color: white;
+            font-size: 2em; /* Smaller font size */
+        }
+
+        .digit {
+            margin: 0 2px; /* Reduced margin */
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .digit .top, .digit .bottom {
+            background-color: rgba(0, 0, 0, 0.7);
+            display: block;
+            width: 40px;  /* Reduced width */
+            height: 60px; /* Reduced height */
+            position: absolute;
+            border-radius: 5px;
+            line-height: 60px; /* Adjusted to match the height */
+            text-align: center;
+        }
+
+        .digit .bottom {
+            transform: rotateX(-90deg);
+            transform-origin: top;
+            backface-visibility: hidden;
+        }
+
+        .digit.flip .bottom {
+            animation: flip-bottom 0.5s forwards;
+        }
+
+        .digit.flip .top {
+            animation: flip-top 0.5s forwards;
+        }
+
+        @keyframes flip-top {
+            0% { transform: rotateX(0deg); }
+            100% { transform: rotateX(-90deg); }
+        }
+
+        @keyframes flip-bottom {
+            0% { transform: rotateX(90deg); }
+            100% { transform: rotateX(0deg); }
+        }
+
+        .digit:not(.flip) .bottom {
+            transform: rotateX(0deg);
+        }
+
+        .digit:not(.flip) .top {
+            transform: rotateX(0deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="flip-clock">
+        <div class="digit" id="hoursTens">
+            <div class="top">0</div>
+            <div class="bottom">0</div>
+        </div>
+        <div class="digit" id="hoursUnits">
+            <div class="top">0</div>
+            <div class="bottom">0</div>
+        </div>
+        <div class="digit" id="minutesTens">
+            <div class="top">0</div>
+            <div class="bottom">0</div>
+        </div>
+        <div class="digit" id="minutesUnits">
+            <div class="top">0</div>
+            <div class="bottom">0</div>
+        </div>
+        <div class="digit" id="secondsTens">
+            <div class="top">0</div>
+            <div class="bottom">0</div>
+        </div>
+        <div class="digit" id="secondsUnits">
+            <div class="top">0</div>
+            <div class="bottom">0</div>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            updateDigit('hoursTens', Math.floor(hours / 10));
+            updateDigit('hoursUnits', hours % 10);
+            updateDigit('minutesTens', Math.floor(minutes / 10));
+            updateDigit('minutesUnits', minutes % 10);
+            updateDigit('secondsTens', Math.floor(seconds / 10));
+            updateDigit('secondsUnits', seconds % 10);
+        }
+
+        function updateDigit(id, newValue) {
+            const digit = document.getElementById(id);
+            const top = digit.querySelector('.top');
+            const bottom = digit.querySelector('.bottom');
+
+            if (top.textContent !== newValue.toString()) {
+                bottom.textContent = newValue;
+                digit.classList.add('flip');
+
+                setTimeout(() => {
+                    top.textContent = newValue;
+                    digit.classList.remove('flip');
+                }, 500);
+            }
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
