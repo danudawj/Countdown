@@ -3,157 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flip Clock Widget</title>
+    <title>Flip Clock with Animated Background</title>
     <style>
+        /* Base styles for body and html elements */
         body, html {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #000;
+            margin: 0; /* Remove default margin */
+            padding: 0; /* Remove default padding */
+            height: 100%; /* Set height to fill the screen */
+            overflow: hidden; /* Prevent scrollbars */
+            font-family: 'Arial', sans-serif; /* Set font family */
+            display: flex; /* Use flexbox for alignment */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            background: url(https://cdn.dribbble.com/users/114039/screenshots/7450076/media/d42b846cf1d20da0ce20f2f98e105172.gif) no-repeat center center/cover; /* Set background to your GIF */
         }
 
-        .background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, #ff0000, #0000ff, #00ff00);
-            background-size: 300% 300%;
-            animation: gradientAnimation 10s ease infinite;
-            z-index: 0;
-        }
-
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
+        /* Container for the flip clock */
         .flip-clock {
-            display: flex;
-            font-family: 'Courier New', Courier, monospace;
-            color: white;
-            font-size: 2em;
-            z-index: 1; /* Ensure the clock is above the background */
+            display: flex; /* Display digits in a row */
+            gap: 5px; /* Increased space between hours and minutes */
         }
 
+        /* Base styles for each digit */
         .digit {
-            margin: 0 2px;
-            position: relative;
-            perspective: 1000px;
+            position: relative; /* Position relative to container for easy control of child elements */
+            width: 80px; /* Width of each digit */
+            height: 150px; /* Height of each digit */
+            perspective: 1000px; /* Set perspective for 3D effect */
         }
 
-        .digit .top, .digit .bottom {
-            background-color: rgba(0, 0, 0, 0.7);
-            display: block;
-            width: 40px;
-            height: 60px;
-            position: absolute;
-            border-radius: 5px;
-            line-height: 60px;
-            text-align: center;
+        /* Style for the top and bottom halves of each digit */
+        .digit div {
+            position: absolute; /* Absolute positioning to overlay top and bottom halves */
+            width: 100%; /* Full width of digit */
+            height: 50%; /* Half the height of the digit */
+            background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+            color: white; /* White text color */
+            display: flex; /* Flexbox for centering content */
+            justify-content: center; /* Center text horizontally */
+            align-items: center; /* Center text vertically */
+            font-size: 5rem; /* Large font size for digits */
+            backface-visibility: hidden; /* Hide back face during flip animation */
+            border-radius: 10px; /* Rounded corners */
+            overflow: hidden; /* Clip any overflow content */
         }
 
+        /* Style specifically for the top half of the digit */
+        .digit .top {
+            top: 0; /* Position at the top */
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2); /* Light border between top and bottom halves */
+            transform-origin: center bottom; /* Set origin for 3D transformation */
+        }
+
+        /* Style specifically for the bottom half of the digit */
         .digit .bottom {
-            transform: rotateX(-90deg);
-            transform-origin: top;
-            backface-visibility: hidden;
+            bottom: 0; /* Position at the bottom */
+            border-top: 2px solid rgba(255, 255, 255, 0.2); /* Light border between bottom and top halves */
+            transform-origin: center top; /* Set origin for 3D transformation */
+            transform: rotateX(90deg); /* Rotate to hide initially */
         }
 
-        .digit.flip .bottom {
-            animation: flip-bottom 0.5s forwards;
+        /* Apply flipping animation */
+        .flip {
+            animation: flip 0.6s ease forwards; /* Define the animation with 0.6s duration */
         }
 
-        .digit.flip .top {
-            animation: flip-top 0.5s forwards;
-        }
-
-        @keyframes flip-top {
-            0% { transform: rotateX(0deg); }
-            100% { transform: rotateX(-90deg); }
-        }
-
-        @keyframes flip-bottom {
-            0% { transform: rotateX(90deg); }
-            100% { transform: rotateX(0deg); }
-        }
-
-        .digit:not(.flip) .bottom {
-            transform: rotateX(0deg);
-        }
-
-        .digit:not(.flip) .top {
-            transform: rotateX(0deg);
+        /* Keyframes for flip animation */
+        @keyframes flip {
+            0% {
+                transform: rotateX(0deg); /* Start with no rotation */
+            }
+            100% {
+                transform: rotateX(-90deg); /* End with a 90-degree rotation (flip down) */
+            }
         }
     </style>
 </head>
 <body>
-    <div class="background"></div>
+    <!-- Flip clock container with digits for hours and minutes -->
     <div class="flip-clock">
-        <div class="digit" id="hoursTens">
+        <!-- Each digit has a top and bottom half -->
+        <div class="digit" id="hour-tens">
+            <div class="top">0</div> <!-- Top half of the digit -->
+            <div class="bottom">0</div> <!-- Bottom half of the digit -->
+        </div>
+        <div class="digit" id="hour-units">
             <div class="top">0</div>
             <div class="bottom">0</div>
         </div>
-        <div class="digit" id="hoursUnits">
+        
+        <!-- Add a space between the hour and minute digits -->
+        <div style="width: 30px;"></div> <!-- Spacer element -->
+        
+        <div class="digit" id="minute-tens">
             <div class="top">0</div>
             <div class="bottom">0</div>
         </div>
-        <div class="digit" id="minutesTens">
-            <div class="top">0</div>
-            <div class="bottom">0</div>
-        </div>
-        <div class="digit" id="minutesUnits">
-            <div class="top">0</div>
-            <div class="bottom">0</div>
-        </div>
-        <div class="digit" id="secondsTens">
-            <div class="top">0</div>
-            <div class="bottom">0</div>
-        </div>
-        <div class="digit" id="secondsUnits">
+        <div class="digit" id="minute-units">
             <div class="top">0</div>
             <div class="bottom">0</div>
         </div>
     </div>
 
     <script>
-        function updateClock() {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const seconds = now.getSeconds();
+        // Function to update the time every second
+        function updateTime() {
+            const now = new Date(); // Get the current date and time
+            const hours = String(now.getHours()).padStart(2, '0'); // Extract hours and pad with leading zero if needed
+            const minutes = String(now.getMinutes()).padStart(2, '0'); // Extract minutes and pad with leading zero if needed
 
-            updateDigit('hoursTens', Math.floor(hours / 10));
-            updateDigit('hoursUnits', hours % 10);
-            updateDigit('minutesTens', Math.floor(minutes / 10));
-            updateDigit('minutesUnits', minutes % 10);
-            updateDigit('secondsTens', Math.floor(seconds / 10));
-            updateDigit('secondsUnits', seconds % 10);
+            // Update each digit with the current time
+            flipDigit(document.getElementById('hour-tens'), hours[0]); // Update tens place of hours
+            flipDigit(document.getElementById('hour-units'), hours[1]); // Update units place of hours
+            flipDigit(document.getElementById('minute-tens'), minutes[0]); // Update tens place of minutes
+            flipDigit(document.getElementById('minute-units'), minutes[1]); // Update units place of minutes
         }
 
-        function updateDigit(id, newValue) {
-            const digit = document.getElementById(id);
-            const top = digit.querySelector('.top');
-            const bottom = digit.querySelector('.bottom');
+        // Function to animate the flipping of a digit
+        function flipDigit(digit, newValue) {
+            const top = digit.querySelector('.top'); // Select the top half of the digit
+            const bottom = digit.querySelector('.bottom'); // Select the bottom half of the digit
 
-            if (top.textContent !== newValue.toString()) {
-                bottom.textContent = newValue;
-                digit.classList.add('flip');
-
+            if (top.textContent !== newValue) { // Only flip if the new value is different from the current value
+                bottom.textContent = newValue; // Set the new value on the bottom half
+                digit.classList.add('flip'); // Trigger the flip animation
                 setTimeout(() => {
-                    top.textContent = newValue;
-                    digit.classList.remove('flip');
-                }, 500);
+                    top.textContent = newValue; // After animation, update the top half with the new value
+                    digit.classList.remove('flip'); // Remove the flip class to reset
+                    bottom.style.transform = 'rotateX(90deg)'; // Reset bottom half's transform to prepare for next flip
+                }, 300); // Delay long enough for the animation to complete
             }
         }
 
-        setInterval(updateClock, 1000);
-        updateClock();
+        setInterval(updateTime, 1000); // Update the time every second
+        updateTime();  // Initial call to set the correct time immediately
     </script>
 </body>
 </html>
